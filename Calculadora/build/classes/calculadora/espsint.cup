@@ -1,0 +1,191 @@
+package calculadora;
+import java_cup.runtime.*;
+import calculadora.VentanaEstructuraCLASS;
+
+action code {:
+    private void muestra(String cad){
+        VentanaEstructuraCLASS.agregarRes(cad);
+    }
+    private void muestraln(String cad){
+        VentanaEstructuraCLASS.agregarRes(cad+"\n");
+    }
+:};
+
+parser code {:
+    // Una vez que se produce un "error sintáctico" se invoca
+    // el método "syntax_error(Symbol actualToken)".
+    // El objeto "actualToken" de la clase Symbol, representa
+    // el último Token consumido por el analizador sintáctico.
+    // Se redefine el método "syntax_error(Symbol actualToken)"
+    public void syntax_error(Symbol actualToken){
+        System.err.println("Error fatal.");
+        report_error("Error de sintaxis: linea " + (actualToken.left + 1) + 
+                     ", columna " + (actualToken.right + 1), null);
+    }
+
+    public static void main(String[] args) {
+        try {
+            AnalizadorLexico scanner = new AnalizadorLexico(new java.io.FileReader("src/calculadora/codigoFuente.txt"));
+            AnalizadorSintactico parser = new AnalizadorSintactico(scanner);
+            parser.parse();
+        } catch (java.io.FileNotFoundException e) {
+            System.out.println("File not found : \"codigoFuente.txt\"");
+        } catch (java.io.IOException e) {
+            System.out.println("IO error scanning file \"codigoFuente.txt\"");
+            System.out.println(e);
+        } catch (Exception e) {
+            System.out.println("Unexpected exception:");
+            e.printStackTrace();
+        }
+    }
+:};
+
+terminal IF, PARA, PARC, LLAVEA, LLAVEC,
+            ID, OPR, NUM, MAS, PUNYCOM, IGUAL, ELSE, WHILE, DO, MENOS, FOR,
+            SWITCH, CASE, DEFAULT, DOS_P, BREAK,
+            PRIVADO, PUBLICO, ENTERO, DOUBLE, CHAR, VOID, COMA, CLASS, COR, CORA, STATIC, STRING, MAIN,
+            COMILLA, SOUT;
+
+non terminal inicio, est_if, condicion, inicializacion, incremento,
+                sentencias, sentencia, est_while, est_do, est_for, est_switch,
+                casos, caso, metodos, metodo, m_acceso, argumentos, tipo_dato,
+                variable, variables, est_prog, estructura, atributos, atributo, main, est_sout, est_souts;
+
+inicio ::= est_prog {: muestraln("Estructura PROGRAMA Correcta\n\n"); :}
+        ;
+
+est_prog ::= m_acceso CLASS ID LLAVEA 
+            atributos
+            metodos
+            LLAVEC
+            | m_acceso CLASS ID LLAVEA
+             main
+            LLAVEC
+        ;
+
+est_sout ::= SOUT PARA COMILLA COMILLA PARC PUNYCOM ;
+ 
+est_souts ::= est_souts est_sout
+              | est_sout
+              ;
+
+main   ::= PUBLICO STATIC VOID MAIN PARA STRING COR CORA ID PARC LLAVEA
+            LLAVEC
+            |
+           PUBLICO STATIC VOID MAIN PARA STRING COR CORA ID PARC LLAVEA
+            est_souts
+            LLAVEC
+        ;   
+
+atributos ::= atributos atributo
+        | atributo
+        ;
+
+atributo ::= m_acceso tipo_dato ID PUNYCOM
+        ;
+
+metodos ::= metodos metodo
+        | metodo
+        ;
+
+
+
+estructura ::= est_if {: muestraln("Estructura IF correcta"); :}
+        |est_while {: muestraln("Estructura WHILE correcta"); :}
+        |est_do {: muestraln("Estructura DO_WHILE correcta"); :}
+        |est_for {: muestraln("Estructura FOR correcta"); :}
+        |est_switch {: muestraln("Estructura SWITCH correcta"); :}
+        ;
+
+est_if ::= IF PARA condicion PARC LLAVEA
+        sentencias
+        LLAVEC
+        |IF PARA condicion PARC LLAVEA
+        sentencias
+        LLAVEC
+        ELSE LLAVEA
+        sentencias
+        LLAVEC
+        ;
+
+condicion ::= ID OPR NUM
+        | ID OPR ID
+        ;
+
+sentencias ::= sentencias sentencia
+        | sentencia
+        ;
+
+sentencia ::= ID IGUAL ID MAS NUM PUNYCOM
+        | ID IGUAL ID MAS ID PUNYCOM
+        | estructura
+        ;
+
+est_while ::= WHILE PARA condicion PARC LLAVEA
+        sentencias
+        LLAVEC
+        ;
+
+est_do ::= DO LLAVEA
+        sentencias
+        LLAVEC WHILE PARA condicion PARC PUNYCOM
+        ;
+
+est_for ::= FOR PARA inicializacion PUNYCOM condicion PUNYCOM incremento PARC LLAVEA
+        sentencias
+        LLAVEC
+        ;
+
+est_switch ::= SWITCH PARA ID PARC LLAVEA
+        casos
+        DEFAULT DOS_P sentencias
+        LLAVEC
+        ;
+
+casos ::= casos caso
+        | caso
+        ;
+
+caso ::= CASE NUM DOS_P sentencias BREAK PUNYCOM
+;
+
+inicializacion ::= ID IGUAL NUM
+        | ID IGUAL ID
+        ;
+
+incremento ::= ID MAS MAS
+        | ID MENOS MENOS
+        ;
+
+metodo ::= m_acceso tipo_dato ID PARA argumentos PARC LLAVEA
+            sentencias
+            LLAVEC
+            | m_acceso tipo_dato ID PARA argumentos PARC LLAVEA
+            variables
+            sentencias
+            LLAVEC
+            ;
+
+m_acceso ::= PRIVADO
+        | PUBLICO
+        | STATIC
+        ;
+
+tipo_dato ::= ENTERO
+        | DOUBLE
+        | CHAR
+        | VOID
+        | STRING
+        ;
+
+argumentos ::=
+        | tipo_dato ID
+        | tipo_dato ID COMA tipo_dato ID
+        ;
+
+variables ::= variables variable
+        | variable
+        ;
+
+variable ::= tipo_dato ID PUNYCOM
+        ;

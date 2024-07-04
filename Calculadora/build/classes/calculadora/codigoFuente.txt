@@ -1,0 +1,39 @@
+// Guillermo Castañeda Ortiz
+/*
+ Guillermo Castañeda Ortiz
+  Lenguajes y Autómatas II
+*/
+
+public class unaClase {
+public int x;
+public int y;
+private double factorial(){  // Cero argumentos
+int g;
+  r=q+r;
+  z=m+1.2;
+} // Fin metodo
+private int impuesto(int k){ // Un argumento
+double promedio;
+char letra;
+  z=m+1.2;
+// ESTRUCTURA IF
+if(x>y){
+  p=q+r;
+  impuesto=saldo+9.7;
+} // Fin if
+} // Fin metodo
+
+private void integral(char z, double w){ // Dos argumentos
+  r=q+r;
+// ESTRUCTURA WHILE
+while(x>y){
+  p=q+r;
+  w=m+n;
+} // Fin while
+// ESTRUCTURA IF
+if(x>y){
+  p=q+r;
+  impuesto=saldo+9.7;
+} // Fin if
+} // Fin metodo
+} // Fin Class

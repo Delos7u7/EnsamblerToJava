@@ -1,0 +1,89 @@
+
+
+
+
+
+terminal           PUNYCOM, MAS, MENOS, MULTIPLICA,
+                   DIVIDE, PAR_A, PAR_C;
+terminal Double    NUMERO, ID;
+
+non terminal            inicio, expresiones;
+non terminal Double     expr;
+
+precedence left  MAS, MENOS; 
+precedence left  MULTIPLICA, DIVIDE; 
+
+inicio ::= inicio expresiones
+         | expresiones
+         ;
+      
+expresiones ::= expr:q  {: muestra(" = " + q.doubleValue()); :}  PUNYCOM 
+              ;
+
+expr ::= NUMERO:n                    {: RESULT = n;                   :}
+       | expr:nx MAS expr:ny         {: RESULT = sumar(nx, ny);       :}
+       | expr:nx MENOS expr:ny       {: RESULT = restar(nx, ny);      :}
+       | expr:nx MULTIPLICA expr:ny  {: RESULT = multiplicar(nx, ny); :}
+       | expr:nx DIVIDE expr:ny      {: RESULT = dividir(nx, ny);     :}
+       | PAR_A expr:e PAR_C          {: RESULT = e;                   :}
+       ;
+
+
+
+
+
+
+
+
+
+   numero  =  [0-9]+("."[0-9]*)?
+
+%%
+   
+    ";"                { return symbol(sym.PUNYCOM); }
+
+    "+"                { System.out.print(" + ");                 
+                         return symbol(sym.MAS); }
+
+    "-"                { System.out.print(" - ");                 
+                         return symbol(sym.MENOS); }
+
+    "*"                { System.out.print(" * ");               
+                         return symbol(sym.MULTIPLICA); }
+
+    "/"                { System.out.print(" / ");              
+                         return symbol(sym.DIVIDE); }
+
+    "("                { System.out.print(" ( ");                
+                         return symbol(sym.PAR_A); }
+
+    ")"                { System.out.print(" ) ");               
+                         return symbol(sym.PAR_C); }
+   
+    {numero}             { System.out.print(yytext());               
+                         return symbol(sym.NUMERO, new Double(yytext())); }  
+  
+    \n                 { /* hacer nada */ }
+     .                 { /* hacer nada */ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
